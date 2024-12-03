@@ -8,16 +8,22 @@ def extract_valid_mults(line)
   line.scan(/mul\(\d+,\d+\)/)
 end
 
+# def sum_of_mults(expressions)
+#   expressions.sum do |expr|
+#     numbers = expr.scan(/\d+/).map(&:to_i)
+#     numbers[0] * numbers[1]
+#   end
+# end
+
+# LLM
 def sum_of_mults(expressions)
   expressions.sum do |expr|
-    numbers = expr.scan(/\d+/).map(&:to_i)
-    numbers[0] * numbers[1]
+    expr.scan(/\d+/).map(&:to_i).reduce(:*)
   end
 end
 
 total_sum = all_programs.sum do |line|
-  valid_mults = extract_valid_mults(line)
-  sum_of_mults(valid_mults)
+  sum_of_mults(extract_valid_mults(line))
 end
 
 puts total_sum
@@ -44,18 +50,5 @@ def remove_after_dont!(instr_arr)
 
     result
 end
-
-# updated_total_sum = all_programs.join.sum do |line|
-#     valid_instr = extract_valid_mults_with_does(line)
-#     sum_of_mults(remove_after_dont!(valid_instr))
-# end
-
-# puts updated_total_sum
-
-# all_programs.each do |line|
-#     valid_instr = extract_valid_mults_with_does(line)
-#     print remove_after_dont!(valid_instr)
-# end
-
 
 puts sum_of_mults(remove_after_dont!(extract_valid_mults_with_does(all_programs.join)))
