@@ -2,19 +2,16 @@
 
 input = File.readlines('aoc4.txt', chomp: true)
 
-# Problem 1
+# Helper functions
 
-def count_in_arrays(input)
+def count_pattern_in_arrays(input, pattern)
   input.sum do |line|
-    line.scan(/XMAS/).count + line.reverse.scan(/XMAS/).count
+    line.scan(/#{pattern}/).count + line.reverse.scan(/#{pattern}/).count
   end
 end
 
-alias count_in_rows count_in_arrays
-
-def count_in_columns(input)
-  transposed_input = input.map(&:chars).transpose.map(&:join)
-  count_in_arrays(transposed_input)
+def count_in_arrays(input)
+  count_pattern_in_arrays(input, 'XMAS')
 end
 
 def collect_diagonals(matrix)
@@ -46,6 +43,15 @@ def collect_diagonals(matrix)
   diagonals
 end
 
+# Problem 1
+
+alias count_in_rows count_in_arrays
+
+def count_in_columns(input)
+  transposed_input = input.map(&:chars).transpose.map(&:join)
+  count_in_arrays(transposed_input)
+end
+
 def count_in_diagonals(input)
   count_in_arrays(collect_diagonals(input).map(&:join))
 end
@@ -55,3 +61,31 @@ def count_all(input)
 end
 
 puts count_all(input)
+
+# Problem 2
+
+def collect_x_diagonal(matrix, i, j)
+  diagonals = []
+
+  diagonals << [matrix[i - 1][j - 1], matrix[i][j], matrix[i + 1][j + 1]]
+  diagonals << [matrix[i - 1][j + 1], matrix[i][j], matrix[i + 1][j - 1]]
+
+  diagonals
+end
+
+def count_valid_x_diagonals(input)
+  input_matrix = input.map(&:chars)
+  rows = input.size
+  columns = input[0].size
+
+  (1...rows - 1).sum do |i|
+    (1...columns - 1).count do |j|
+      current_x_diagonal = collect_x_diagonal(input_matrix, i, j).map(&:join)
+
+      input_matrix[i][j] == 'A' &&
+        count_pattern_in_arrays(current_x_diagonal, 'MAS') == 2
+    end
+  end
+end
+
+puts count_valid_x_diagonals(input)
