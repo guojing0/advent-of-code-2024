@@ -7,6 +7,8 @@ rules, updates = input.partition { |line| line.include?('|') }
 rules = rules.map { |rule| rule.split('|').map(&:to_i) }
 updates = updates.reject(&:empty?).map { |update| update.split(',').map(&:to_i) }
 
+rules = rules.to_set
+
 # Problem 1
 
 def valid_update?(update, rules)
@@ -25,23 +27,23 @@ puts sum_of_middle_numbers(valid_updates)
 
 # inefficient solution
 #
-# def make_valid_update!(update, rules)
-#   changed = true
-#
-#   while changed
-#     changed = false
-#     (0...update.length - 1).each do |index|
-#       page_pair = [update[index], update[index + 1]]
-#
-#       if rules.include?(page_pair.reverse)
-#         update[index], update[index + 1] = page_pair.reverse
-#         changed = true
-#       end
-#     end
-#   end
-#
-#   update
-# end
+def make_valid_update!(update, rules)
+  changed = true
+
+  while changed
+    changed = false
+    (0...update.length - 1).each do |index|
+      page_pair = [update[index], update[index + 1]]
+
+      if rules.include?(page_pair.reverse)
+        update[index], update[index + 1] = page_pair.reverse
+        changed = true
+      end
+    end
+  end
+
+  update
+end
 
 # solution based on sorting
 
@@ -59,5 +61,7 @@ end
 
 invalid_updates = updates - valid_updates
 after_valid_updates = invalid_updates.map { |update| update.sort(&valid_comparator(rules))  }
+
+# after_valid_updates = invalid_updates.map { |update| make_valid_update!(update, rules)  }
 
 puts sum_of_middle_numbers(after_valid_updates)
