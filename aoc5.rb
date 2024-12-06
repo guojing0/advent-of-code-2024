@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # File processing
 
 input = File.readlines('aoc5.txt', chomp: true)
